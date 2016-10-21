@@ -1,4 +1,3 @@
-// DO NOT MAKE THE CALL TO API INSIDE THIS LIB, IT'S TOO SPECIFIC TO BROWSERS AND ENVIRONMENTS, PASS RESULTS INTO THIS AND LET IT PASS BACK EVENTS IN A CALLBACK
 
 // first API Call
 
@@ -27,7 +26,8 @@
 		//get the results of the other side of the cached records and stream them
 
 var objConfig={speed:1, order:'desc', cache:5
-	fnEvent:function(objEvent){ console.log(objEvent); }
+	fnEvent:function(objEvent){ console.log(objEvent); },
+	fnCall:function(){ console.log('need to pass in the API call as a callback function to override this message'); }
 };
 
 var fnGetFormat=function(results){
@@ -73,12 +73,14 @@ var fnGetRecordDiff=function(arrRecords){
 };
 
 //----====|| PROCESSING LOGIC ||=====----\\
-var fnFirstResults=function(results){
+var fnFirstResults=function(){
+	var results = objConfig.fnCall();
 	var arrRecords = fnConvertData(results);
 	fnStreamEvents(arrRecords);
 };
 
 var fnPollResults=function(results){
+	var results = objConfig.fnCall();
 	var arrRecords = fnGetRecordDiff(results);
 }
 

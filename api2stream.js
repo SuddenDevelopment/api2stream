@@ -74,16 +74,28 @@ var fnGetRecordDiff=function(arrRecords){
 	//if nothing matched, just return it all
 };
 
+var fnStop=function(){
+	objConfig.poll=false;
+};
+
+var fnGo=function(){
+	objConfig.poll=true;
+	fnPollResults();
+};
+
 //----====|| PROCESSING LOGIC ||=====----\\
 var fnFirstResults=function(){
+	objConfig.poll=true;
 	var results = objConfig.fnCall();
 	var arrRecords = fnConvertData(results);
 	fnStreamEvents(arrRecords);
 };
 
 var fnPollResults=function(results){
-	var results = objConfig.fnCall();
-	var arrRecords = fnGetRecordDiff(results);
-	fnStreamEvents(arrRecords);
+	if(objConfig.poll===true){
+		var results = objConfig.fnCall();
+		var arrRecords = fnGetRecordDiff(results);
+		fnStreamEvents(arrRecords);
+	}
 }
 

@@ -21,4 +21,7 @@ apiPoll.fnFirstResults();
 
 //and STOP!
 apiPoll.fnStop();
+
+//and Resume
+apiPoll.fnGo();
 ``

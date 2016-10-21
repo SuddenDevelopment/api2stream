@@ -62,6 +62,8 @@ var fnStreamEvents=function(arrRecords){
 		//wait the necessary time between sending events
 		_.debounce(intDelay,fnSendEvent(arrRecords[i]));
 	}
+	//approximate timing to do the api poll at the right time and avoid the mess of it firing asynchronously from the deboucne loop
+	_.delay(intDelay*arrRecords.length,fnPollResults();
 };
 
 var fnGetRecordDiff=function(arrRecords){
@@ -82,5 +84,6 @@ var fnFirstResults=function(){
 var fnPollResults=function(results){
 	var results = objConfig.fnCall();
 	var arrRecords = fnGetRecordDiff(results);
+	fnStreamEvents(arrRecords);
 }
 

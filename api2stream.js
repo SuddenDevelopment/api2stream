@@ -4,6 +4,7 @@
 	//determine results format
 		//1 value per line = {v:value}
 		//csv get the schema from the 1st line, apply as the keys for the rest of the lines
+		//key value pairs space separated, = between key and value
 		//json object per line requires no transform
 		//json objects in an array just need to be looped
 		//xml needs a bunch of work, best to use an outside conversion lib

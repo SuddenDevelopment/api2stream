@@ -29,7 +29,7 @@
 if (typeof window === 'undefined'){}
 var api2stream = function(objConfig){
 if(typeof objConfig === 'undefined'){
-	var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', cache:5, format:'json', poll:true,
+	var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', cache:5, format:'json', poll:false,
 	fnEvent:function(objEvent){ console.log('Override fnEvent with a defined callback: ',objEvent); },
 	fnCall:function(){ console.log('need to pass in the API call as a callback function to override this message'); }
 	};
@@ -95,15 +95,18 @@ var fnSendRecord=function(objRecord){
 var fnStreamRecords=function(arrRecords){
 	//console.log(arrRecords);
 	var intDelay=1000/objConfig.eventSpeed;
-	for(var i=arrRecords.length-1;i>0;i--){
-		//wait the necessary time between sending events
-		console.log(arrRecords[i]);
-		setTimeout(fnSendRecord(arrRecords[i]), intDelay);
+	if( typeof arrRecords !== 'undefined' && arrRecords.length > 0){
+		var intRecords=arrRecords.length;
+		for(var i=intRecords;i>=0;i--){
+			//wait the necessary time between sending events
+			//console.log(arrRecords[i]);
+			setTimeout(function(){fnSendRecord(arrRecords[i])}, intDelay);
+		}
+		//approximate timing to do the api poll at the right time and avoid the mess of it firing asynchronously from the deboucne loop
 	}
-	//approximate timing to do the api poll at the right time and avoid the mess of it firing asynchronously from the deboucne loop
-	var intWait = intDelay*arrRecords.length;
+	var intWait = intDelay*intRecords;
 	if(intWait < objConfig.pollSpeed*1000){ intWait=objConfig.pollSpeed*1000; }
-	setTimeout(fnPollResults(), intWait);
+	setTimeout(function(){fnPollResults()}, intWait);
 };
 
 var fnGetRecordDiff=function(arrRecords,newResults){

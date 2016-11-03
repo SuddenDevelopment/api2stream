@@ -9,7 +9,7 @@ describe('simplest test', function () {
     var objConfig={
        fnEvent:function(objEvent){
          //put your stream new event call here
-         console.log(objEvent);
+         console.log('emit: ',objEvent);
        }
       ,fnCall:function(){
          var results=[];
@@ -22,7 +22,7 @@ describe('simplest test', function () {
         order:'desc', // newest or oldest records first? oldest first= desc
         cache:5, //number of records to keep from the beginning and end of the result for diff comparisons
         format:'json', //format of the results
-        poll:true // set to false if you only want to stream 1 set of events
+        poll:false // set to false if you only want to stream 1 set of events
     };
 
     //create an instance for each API call you need to poll
@@ -33,7 +33,7 @@ describe('simplest test', function () {
     
     //check
     //console.log(intResults);
-   (intResults).should.be.exactly('2');
+   (intResults).should.be.exactly(2);
    done();
  });
 });

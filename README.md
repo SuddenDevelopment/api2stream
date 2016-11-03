@@ -7,7 +7,7 @@ var objConfig={
    fnEvent:function(){
      //put your stream new event call here
    }
-  ,fnPoll:function(){
+  ,fnCall:function(){
      var results;
      //put your api call here
      return results;

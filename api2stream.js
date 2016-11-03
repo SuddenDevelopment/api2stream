@@ -25,10 +25,14 @@
 		//if both exist, no change. //do we want to nitfy the user of a poll with no change?
 		//if only one set exists we know the order and can keep knowledge of it.
 		//get the results of the other side of the cached records and stream them
-
-var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', cache:5, format:'json', poll:true,
+//only do the require thing in node, browser needs to include files individually
+if (typeof window === 'undefined'){}
+var api2stream = function(objConfig){
+if(typeof objConfig === 'undefined'){
+	var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', cache:5, format:'json', poll:true,
 	fnEvent:function(objEvent){ console.log('Override fnEvent with a defined callback: ',objEvent); },
 	fnCall:function(){ console.log('need to pass in the API call as a callback function to override this message'); }
+	};
 };
 
 //used for timing the polls
@@ -40,7 +44,7 @@ var fnSetFormat=function(results){
 	var fFound=false;
 	for(var i=0;i<arrKeys.length;i++){
 		if(fFound===false){
-			fFound=objFormatTest(results)
+			fFound=objFormatTest[arrKeys[i]]();
 		}
 	}
 	return;
@@ -54,18 +58,24 @@ objFormatTest.json=function(){ return true; }
 objFormatTest.arrJson=function(){ return true; }
 
 var objConversions={};
-objConversions.txt=function(results){ return arrRecords; };
+objConversions.txt=function(results){ 
+	var arrRecords=[];
+	return arrRecords; 
+};
 objConversions.csv=function(results){ return arrRecords; };
 objConversions.kv=function(results){ return arrRecords; };
-objConversions.json=function(results){ return arrRecords; };
+objConversions.json=function(results){ 
+	//console.log(results);
+	return results; 
+};
 objConversions.arrJson=function(results){ return arrRecords; };
 
 var fnConvertData=function(results){
 	//if the order is found to be ascending then need to reverse the array
 	var arrRecords = objConversions[objConfig.format](results);
 	//cache the first and last records
-	objConfig.arrFirst=arrRecords.splice(0,objConfig.cache);
-	objConfig.arrLast=arrRecords.splice(arrRecords.length-objConfig.cache);
+	objConfig.arrFirst=arrRecords.slice(0,objConfig.cache+1);
+	objConfig.arrLast=arrRecords.slice(arrRecords.length-objConfig.cache);
 	return arrRecords;
 };
 
@@ -76,16 +86,19 @@ var fnValue=function(varValue){
 	return varValue;
 }
 
-var fnSendEvent=function(objEvent){
+var fnSendRecord=function(objRecord){
+	//console.log('send: ',objRecord);
 	//use a given callback
-	objConfig.fnEvent(objEvent);
+	objConfig.fnEvent(objRecord);
 };
 
-var fnStreamEvents=function(arrRecords){
+var fnStreamRecords=function(arrRecords){
+	//console.log(arrRecords);
 	var intDelay=1000/objConfig.eventSpeed;
-	for(var i=arrRecords.length;i>0;i--){
+	for(var i=arrRecords.length-1;i>0;i--){
 		//wait the necessary time between sending events
-		setTimeout(fnSendEvent(arrRecords[i]), intDelay);
+		console.log(arrRecords[i]);
+		setTimeout(fnSendRecord(arrRecords[i]), intDelay);
 	}
 	//approximate timing to do the api poll at the right time and avoid the mess of it firing asynchronously from the deboucne loop
 	var intWait = intDelay*arrRecords.length;
@@ -101,28 +114,34 @@ var fnGetRecordDiff=function(arrRecords,newResults){
 	//if nothing matched, just return it all
 };
 
-var fnStop=function(){
+this.fnStop=function(){
 	objConfig.poll=false;
 };
 
-var fnGo=function(){
+this.fnGo=function(){
 	objConfig.poll=true;
 	fnPollResults();
 };
 
 //----====|| PROCESSING LOGIC ||=====----\\
-var fnFirstResults=function(){
+this.fnFirstResults=function(){
 	var varResults = objConfig.fnCall();
-	fnSetFormat(results);
+	//console.log(varResults);
+	fnSetFormat(varResults);
 	var arrRecords = fnConvertData(varResults);
-	fnStreamEvents(arrRecords);
+	//console.log(arrRecords);
+	fnStreamRecords(arrRecords);
+	return arrRecords.length;
 };
 
+//should not be called directly, called by fnFirstResults if polling is set to true
 var fnPollResults=function(arrResults){
 	if(objConfig.poll===true){
 		var newResults = fnConvertData(objConfig.fnCall());
 		var arrRecords = fnGetRecordDiff(arrResults,newResults);
-		fnStreamEvents(arrRecords);
+		fnStreamRecords(arrRecords);
 	}
 }
+}
 
+if (typeof module !== 'undefined' && module.exports){module.exports = api2stream;}

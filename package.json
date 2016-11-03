@@ -1,0 +1,35 @@
+{
+  "name": "api2stream",
+  "description": "Poll an API for changes and stream the results",
+  "homepage": "https://github.com/SuddenDevelopment/api2stream",
+  "version": "1.0.0",
+  "contributors": [
+    "Anthony Aragues <anthony.aragues@gmail.com>"
+  ],
+  "dependencies": {
+    "suddenutils": "^1.0.0"
+  },
+  "main": "decorator.js",
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "should": "^4.4.2"
+  },
+  "scripts": {
+    "test": "mocha -R spec ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuddenDevelopment/api2stream.git"
+  },
+  "keywords": [
+    "api",
+    "poll",
+    "stream"
+  ],
+  "author": "Anthony Aragues <anthony.aragues@gmail.com> (http://suddendevelopment.com/)",
+  "license": "Proprietary",
+  "bugs": {
+    "url": "https://github.com/SuddenDevelopment/api2stream/issues"
+  },
+  "readmeFilename": "README.md"
+}

@@ -9,8 +9,9 @@ var objConfig={
    }
   ,fnCall:function(){
      var results;
-     //put your api call here
-     return results;
+     //populate results somehow, most likely an api call
+     //need to call the lib to process the results when they complete, this avoids race conditions
+     apiPoll.process(results);
   }
 };
 

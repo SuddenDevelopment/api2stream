@@ -31,17 +31,25 @@
 //only do the require thing in node, browser needs to include files individually
 if (typeof window === 'undefined'){}
 var api2stream = function(objConfig){ 'use strict';
+var self=this;
 if(typeof objConfig === 'undefined'){
-	var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', cache:5, format:'json', poll:false,
+	//set all defaults
+	var objConfig={pollSpeed:60,eventSpeed:1, order:'desc', format:'json', poll:false,
 	fnEvent:function(objEvent){ console.log('Override fnEvent with a defined callback: ',objEvent); },
 	fnCall:function(){ console.log('need to pass in the API call as a callback function to override this message'); }
 	};
+}else{
+//set some defaults
+	if(!objConfig.hasOwnProperty('pollSpeed')){objConfig.pollSpeed=60;}
+	if(!objConfig.hasOwnProperty('eventSpeed')){objConfig.eventSpeed=1;}
+	if(!objConfig.hasOwnProperty('order')){objConfig.order='desc';}
+	if(!objConfig.hasOwnProperty('format')){objConfig.format='json';}
+	if(!objConfig.hasOwnProperty('poll')){objConfig.poll=false;}
 };
 
 //used for timing the polls
 var tsUpdated=Date.now();
 var objThrottle;
-
 var fnSetFormat=function(results){
 	if(!objConfig.hasOwnProperty('format') || objConfig.format ===''){
 		var arrKeys=Object.keys(objFormatTest);
@@ -162,18 +170,21 @@ this.fnStop=function(){
 
 this.fnGo=function(){
 	objConfig.poll=true;
-	fnPollResults();
+	self.fnPollResults();
 };
 
 //----====|| PROCESSING LOGIC ||=====----\\
 this.fnFirstResults=function(){
 	var varResults = objConfig.fnCall();
-	fnSetFormat(varResults);
-	var arrRecords = fnConvertData(varResults);
-	fnStreamRecords(arrRecords);
-	return arrRecords.length;
+	//fnSetFormat(varResults);
 };
-
+this.process=function(results){
+	var arrRecords = fnConvertData(results);
+	fnStreamRecords(arrRecords);
+	if(arrRecords !== undefined && arrRecords.length>0){
+		return arrRecords.length;
+	}
+}
 //should not be called directly, called by fnFirstResults if polling is set to true
 var fnPollResults=function(arrResults){
 	if(objConfig.poll===true || objConfig.poll > 0){

@@ -46,6 +46,7 @@ if(typeof objConfig === 'undefined'){
 	if(!objConfig.hasOwnProperty('format')){objConfig.format='json';}
 	if(!objConfig.hasOwnProperty('poll')){objConfig.poll=false;}
 };
+objConfig.stream=true;
 
 //used for timing the polls
 var tsUpdated=Date.now();
@@ -115,7 +116,9 @@ var fnValue=function(varValue){
 var fnSendRecord=function(objRecord){
 	//console.log('send: ',objRecord);
 	//use a given callback
-	objConfig.fnEvent(objRecord);
+	if(objConfig.stream===true){
+		objConfig.fnEvent(objRecord);
+	}
 };
 
 var fnStreamRecords=function(arrRecords){
@@ -166,6 +169,7 @@ var fnGetRecordDiff=function(arrRecords,newResults){
 
 this.fnStop=function(){
 	objConfig.poll=false;
+	objConfig.stream=false;
 };
 
 this.fnGo=function(){

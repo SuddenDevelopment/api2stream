@@ -76,7 +76,11 @@ objConversions.txt=function(results){
 	var arrRecords=[];
 	var arrResults=results.split('\n');	
 	//assumes one value per line
-	for(var i=0; i<arrResults.length; i++){ arrRecords.push({v:arrResults[i]}); }
+	for(var i=0; i<arrResults.length; i++){ 
+		if(arrResults[i]!==''){
+			arrRecords.push({v:arrResults[i]});
+		}
+	}
 	return arrRecords; 
 };
 objConversions.csv=function(results){ 
